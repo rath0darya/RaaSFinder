@@ -1,0 +1,22 @@
+{
+  "generated_at": null,
+  "engine": {
+    "mode": "zero-seed",
+    "ai": false,
+    "external_cti": false,
+    "status": "ready"
+  },
+  "stats": {
+    "verified_groups": 0,
+    "candidates": 0,
+    "evidence_records": 0,
+    "observed_sources": 0
+  },
+  "channels": {
+    "clearweb": "ready",
+    "forums": "ready",
+    "onion": "ready",
+    "onion_index": "ready"
+  },
+  "observations": []
+}
