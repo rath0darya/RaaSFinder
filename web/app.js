@@ -42,9 +42,18 @@
     observations.slice(0, 20).forEach((item) => {
       const article = document.createElement("article");
       article.className = "observation";
+      const signals = Array.isArray(item.signals) && item.signals.length ? item.signals.join(" · ") : "No matching signals";
       article.innerHTML = `
-        <div><b>${escapeHtml(item.title || "Untitled observation")}</b><span>${escapeHtml(item.channel || "unknown")}</span></div>
-        <strong>${escapeHtml(item.status || "unverified")}</strong>`;
+        <div class="observation-main">
+          <b>${escapeHtml(item.title || "Untitled observation")}</b>
+          <span>${escapeHtml(item.channel || "unknown")} · ${escapeHtml(item.source_name || "unknown source")}</span>
+          <small>${escapeHtml(item.masked_url || "")}</small>
+          <small>${escapeHtml(signals)}</small>
+        </div>
+        <div class="observation-meta">
+          <strong>${escapeHtml(item.status || "unverified")}</strong>
+          <span>${escapeHtml(item.confidence || "unknown")} · score ${escapeHtml(item.score ?? 0)}</span>
+        </div>`;
       list.appendChild(article);
     });
   }
