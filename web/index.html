@@ -18,27 +18,46 @@
       <h1>Find first. Verify later.</h1>
       <p class="lead">A deterministic RaaS discovery system built from scratch across clear web, public forums, onion sources and onion indexes.</p>
     </section>
+
+    <section class="status panel">
+      <div><p class="eyebrow">ENGINE STATUS</p><h2><span class="dot"></span><span id="engine-status">loading</span></h2></div>
+      <div class="status-meta"><span>Mode: <b id="engine-mode">loading</b></span><span>Last update: <b id="last-update">loading</b></span></div>
+    </section>
+
     <section class="stats">
       <article><strong id="groups">0</strong><span>Verified groups</span></article>
       <article><strong id="candidates">0</strong><span>Candidates</span></article>
       <article><strong id="evidence">0</strong><span>Evidence records</span></article>
       <article><strong id="sources">0</strong><span>Observed sources</span></article>
     </section>
+
     <section class="panel">
       <div class="panel-head"><div><p class="eyebrow">DISCOVERY CHANNELS</p><h2>Independent collection paths</h2></div></div>
       <div class="channels">
-        <div><b>🌐 Clear Web</b><span>Publicly accessible pages</span></div>
-        <div><b>🕸️ Forums</b><span>Publicly readable discussions</span></div>
-        <div><b>🧅 Onion</b><span>Publicly accessible onion pages</span></div>
-        <div><b>🔎 Onion Index</b><span>Index-derived candidates</span></div>
+        <div data-channel="clearweb"><b>🌐 Clear Web</b><span>Publicly accessible pages</span><em class="channel-status">LOADING</em></div>
+        <div data-channel="forums"><b>🕸️ Forums</b><span>Publicly readable discussions</span><em class="channel-status">LOADING</em></div>
+        <div data-channel="onion"><b>🧅 Onion</b><span>Publicly accessible onion pages</span><em class="channel-status">LOADING</em></div>
+        <div data-channel="onion_index"><b>🔎 Onion Index</b><span>Index-derived candidates</span><em class="channel-status">LOADING</em></div>
       </div>
     </section>
+
+    <section class="panel">
+      <div class="panel-head"><div><p class="eyebrow">OBSERVATIONS</p><h2>Latest intelligence</h2></div></div>
+      <div id="observations" class="observations">
+        <div id="observations-empty" class="observation-empty">
+          <div class="orb">⌕</div>
+          <h3>No verified intelligence yet</h3>
+          <p>The interface is connected, but the zero-seed engine has not produced a verified observation. No fake records are displayed.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="panel">
       <div class="panel-head"><div><p class="eyebrow">PIPELINE</p><h2>Evidence lifecycle</h2></div></div>
       <div class="pipeline"><span>DISCOVER</span><i>→</i><span>SNAPSHOT</span><i>→</i><span>PARSE</span><i>→</i><span>DETECT</span><i>→</i><span>VERIFY</span><i>→</i><span>PERSIST</span><i>→</i><span>DELETE</span></div>
     </section>
-    <section class="empty"><div class="orb">⌕</div><h2>No intelligence yet</h2><p>This is intentional. RaaSFinder starts with zero known groups and zero known addresses.</p></section>
   </main>
   <footer>RaaSFinder · deterministic · evidence-first</footer>
+  <script src="./app.js" defer></script>
 </body>
 </html>
