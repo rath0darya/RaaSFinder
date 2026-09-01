@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '29 */6 * * *'
 
 permissions:
   contents: read
@@ -23,6 +25,48 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install discovery dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Install Tor for onion collection
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tor
+          sudo systemctl restart tor
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            if curl --silent --socks5-hostname 127.0.0.1:9050 https://check.torproject.org/ >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+
+      - name: Run zero-seed discovery
+        env:
+          TOR_PROXY: socks5h://127.0.0.1:9050
+          RAASFINDER_OUTPUT: web/data.json
+        run: python -m app.discovery
+
+      - name: Validate generated intelligence
+        run: |
+          python -m pytest -q
+          python -m app.cli --self-check
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('web/data.json').read_text())
+          assert data['engine']['ai'] is False
+          assert data['engine']['external_cti'] is False
+          assert data['engine']['mode'] == 'zero-seed'
+          assert isinstance(data['observations'], list)
+          print('Discovery records:', len(data['observations']))
+          PY
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
