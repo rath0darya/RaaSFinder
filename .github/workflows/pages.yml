@@ -51,7 +51,7 @@ jobs:
         env:
           TOR_PROXY: socks5h://127.0.0.1:9050
           RAASFINDER_OUTPUT: web/data.json
-        run: python -m app.discovery
+        run: python -m app.discovery.runner
 
       - name: Validate generated intelligence
         run: |
