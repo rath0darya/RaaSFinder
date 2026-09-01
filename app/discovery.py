@@ -71,10 +71,9 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _session() -> requests.Session:
+def _session(proxy: str | None = None) -> requests.Session:
     session = requests.Session()
     session.headers.update({"User-Agent": USER_AGENT, "Accept": "text/html,application/xhtml+xml"})
-    proxy = os.environ.get("TOR_PROXY", "").strip()
     if proxy:
         session.proxies.update({"http": proxy, "https": proxy})
     return session
@@ -236,12 +235,15 @@ def _verify_repeated(results: list[Result]) -> list[Result]:
 
 
 def run(output: Path) -> dict:
-    session = _session()
+    clear_session = _session()
+    onion_session = _session(os.environ.get("TOR_PROXY")) if os.environ.get("TOR_PROXY") else clear_session
+
     with tempfile.TemporaryDirectory(prefix="raasfinder-snapshots-") as tmp:
         snapshot_root = Path(tmp)
-        candidates = discover_candidates(session)
+        candidates = discover_candidates(clear_session)
         results: list[Result] = []
         for candidate in candidates:
+            session = onion_session if candidate.channel == "onion" else clear_session
             result = fetch_and_analyze(session, candidate, snapshot_root)
             if result and result.status in {"candidate", "verified"}:
                 results.append(result)
@@ -250,8 +252,8 @@ def run(output: Path) -> dict:
     observations = [asdict(item) for item in results]
     verified = sum(item["status"] == "verified" for item in observations)
     channels = {name: "ready" for name in ("clearweb", "forums", "onion", "onion_index")}
-    if not any(item["channel"] == "onion" for item in observations):
-        channels["onion"] = "no-results" if os.environ.get("TOR_PROXY") else "proxy-required"
+    if not os.environ.get("TOR_PROXY"):
+        channels["onion"] = "proxy-required"
 
     data = {
         "generated_at": utc_now(),
