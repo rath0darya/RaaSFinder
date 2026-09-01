@@ -1,0 +1,9 @@
+__pycache__/
+.pytest_cache/
+.venv/
+*.pyc
+runtime/snapshots/*
+!runtime/snapshots/.gitkeep
+data/*.json
+data/*.db
+.DS_Store

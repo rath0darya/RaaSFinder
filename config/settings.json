@@ -1,0 +1,8 @@
+{
+  "seed_count": 0,
+  "known_groups": [],
+  "known_addresses": [],
+  "external_cti": false,
+  "ai": false,
+  "channels": ["clearweb", "forum", "onion", "onion_index"]
+}
