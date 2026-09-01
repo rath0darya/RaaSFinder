@@ -1,0 +1,56 @@
+name: UI Check
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ui-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate web files
+        run: |
+          test -f web/index.html
+          test -f web/style.css
+          python - <<'PY'
+          from pathlib import Path
+          html = Path('web/index.html').read_text(encoding='utf-8')
+          css = Path('web/style.css').read_text(encoding='utf-8')
+          assert '<html' in html.lower()
+          assert '</html>' in html.lower()
+          assert 'stylesheet' in html.lower()
+          assert len(css.strip()) > 0
+          print('Static UI validation: OK')
+          PY
+
+      - name: Serve website
+        run: python -m http.server 4173 --directory web >/tmp/raasfinder-http.log 2>&1 &
+
+      - name: Smoke test website
+        run: |
+          python - <<'PY'
+          import time
+          from urllib.request import urlopen
+          time.sleep(1)
+          with urlopen('http://127.0.0.1:4173/', timeout=10) as response:
+              body = response.read().decode('utf-8', errors='replace')
+              assert response.status == 200
+              assert 'RaaSFinder' in body
+              assert 'Clear Web' in body
+              assert 'Public Forums' in body
+              assert 'Onion' in body
+              print('UI HTTP smoke test: OK')
+          PY
+
+      - name: Upload UI files for inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: raasfinder-ui-preview
+          path: web/
